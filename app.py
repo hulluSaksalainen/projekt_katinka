@@ -27,7 +27,7 @@ def get_data():
     offset = request.args.get('offset', default=0, type=int)
     if not table:
         return jsonify({"error": "Table name is required"}), 400
-    return jsonify(table,limit,offset)
+    return jsonify(get_table_by_name(table,limit,offset))
 
 def get_table_by_name(table:str, limit:int=None, offset:int=0):
     conn = get_db_connection()
@@ -50,7 +50,7 @@ def get_table_by_name(table:str, limit:int=None, offset:int=0):
 
 @app.route('/tables', methods=['GET'])
 def get_tables():
-    return jsonify(alltables)
+    return jsonify(alltables())
 
 def alltables():
     conn = get_db_connection()

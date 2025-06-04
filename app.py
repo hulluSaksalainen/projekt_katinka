@@ -54,5 +54,13 @@ def get_tables():
 
     return jsonify(table_list)
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+
+@app.route("/")
+def home():
+    return "Hello from Katinka!"
+
+if __name__ == "__main__":
+    app.run()
+
+#if __name__ == '__main__':
+ #   app.run(host='0.0.0.0', port=5000)

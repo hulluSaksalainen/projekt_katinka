@@ -5,3 +5,5 @@ pandas
 logging
 sqlalchemy
 dotenv
+flask_compress
+flask-compress

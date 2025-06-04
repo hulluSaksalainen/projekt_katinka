@@ -143,3 +143,9 @@ FOREIGN key(learning_language) REFERENCES languages(abkuerzung);
 select count(*) as c, lexem_uninflected from these1_englischlerner_formenreichtum_mit_wordtyp_lang 
 GROUP BY lexem_uninflected order by c desc;
 select * from lexeme where lexem_uninflected='pouco';
+
+
+seLECT table_name, pg_size_pretty(pg_total_relation_size(quote_ident(table_name))) AS size
+FROM information_schema.tables
+WHERE table_schema = 'projekt_katinka'
+ORDER BY pg_total_relation_size(quote_ident(table_name)) DESC;

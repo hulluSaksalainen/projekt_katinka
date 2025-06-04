@@ -53,6 +53,31 @@ def get_tables():
         conn.close()
 
     return jsonify(table_list)
+def get_table_by_name(table:str):
+    conn = get_db_connection()
+
+    try:
+        query = f"SELECT * FROM {table};"
+        result=conn.execute(text(query))
+        columns = result.keys()
+        rows = result.fetchall()
+        data = [dict(zip(columns, row)) for row in rows]
+    except SQLAlchemyError as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        conn.close()
+
+    return data
+
+@app.route('/data/all')
+def get_all_data():
+    all_tables = get_tables()  # Diese Funktion sollte eine Liste von Tabellennamen zurückgeben
+    result = {}
+
+    for table in all_tables:
+        result[table] = get_table_by_name(table)
+
+    return jsonify(result)
 
 
 @app.route("/")

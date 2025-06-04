@@ -123,3 +123,4 @@ WHERE learning_language = 'fr';
 SELECT matviewname AS view_name
 FROM pg_matviews
 WHERE schemaname = 'projekt_katinka';
+select * from languages limit 1000 offset 0;

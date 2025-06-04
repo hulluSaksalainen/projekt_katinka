@@ -1,15 +1,18 @@
 
 from dotenv import load_dotenv
 import os
-import psycopg2
+from sqlalchemy import create_engine, text
+from sqlalchemy.exc import SQLAlchemyError
 from flask import Flask, request, jsonify
-
+load_dotenv()
 app = Flask(__name__)
 
 # Verbindung zur PostgreSQL-Datenbank herstellen
 def get_db_connection():
     load_dotenv()
-    conn = psycopg2.connect(os.getenv('DB_PORT'))
+    ENGINE = create_engine(os.getenv("DB_CONNECT"))
+    conn=ENGINE.connect()  
+    conn.execute(text("SET search_path TO projekt_katinka;"))
     return conn
 
 @app.route('/data', methods=['GET'])
@@ -17,22 +20,19 @@ def get_data():
     table = request.args.get('table')
     limit = request.args.get('limit', default=1000, type=int)
     offset = request.args.get('offset', default=0, type=int)
-
     if not table:
         return jsonify({"error": "Table name is required"}), 400
 
     conn = get_db_connection()
-    cur = conn.cursor()
 
     try:
-        cur.execute(f'SELECT * FROM {table} LIMIT %s OFFSET %s', (limit, offset))
-        rows = cur.fetchall()
-        colnames = [desc[0] for desc in cur.description]
-        data = [dict(zip(colnames, row)) for row in rows]
-    except psycopg2.DatabaseError as e:
+        result=conn.execute(text(f'SELECT * FROM {table} LIMIT {limit} OFFSET {offset};'))
+        columns = result.keys()
+        rows = result.fetchall()
+        data = [dict(zip(columns, row)) for row in rows]
+    except SQLAlchemyError as e:
         return jsonify({"error": str(e)}), 500
     finally:
-        cur.close()
         conn.close()
 
     return jsonify(data)
@@ -40,16 +40,13 @@ def get_data():
 @app.route('/tables', methods=['GET'])
 def get_tables():
     conn = get_db_connection()
-    cur = conn.cursor()
-
     try:
-        cur.execute("SELECT table_name FROM information_schema.tables WHERE table_schema = 'projekt_katinka'")
-        tables = cur.fetchall()
+        result=conn.execute(text("SELECT table_name FROM information_schema.tables WHERE table_schema = 'projekt_katinka'"))
+        tables = result.fetchall()
         table_list = [table[0] for table in tables]
-    except psycopg2.DatabaseError as e:
+    except SQLAlchemyError as e:
         return jsonify({"error": str(e)}), 500
     finally:
-        cur.close()
         conn.close()
 
     return jsonify(table_list)

@@ -18,7 +18,7 @@ def get_db_connection():
 @app.route('/data', methods=['GET'])
 def get_data():
     table = request.args.get('table')
-    limit = request.args.get('limit', default=1000, type=int)
+    limit = request.args.get('limit', type=int)
     offset = request.args.get('offset', default=0, type=int)
     if not table:
         return jsonify({"error": "Table name is required"}), 400
@@ -26,7 +26,10 @@ def get_data():
     conn = get_db_connection()
 
     try:
-        result=conn.execute(text(f'SELECT * FROM {table} LIMIT {limit} OFFSET {offset};'))
+        query = f"SELECT * FROM {table}"
+        if limit is not None:
+            query += f" LIMIT {limit} OFFSET {offset};"
+        result=conn.execute(text(query))
         columns = result.keys()
         rows = result.fetchall()
         data = [dict(zip(columns, row)) for row in rows]

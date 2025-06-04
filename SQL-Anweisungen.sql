@@ -124,3 +124,22 @@ SELECT matviewname AS view_name
 FROM pg_matviews
 WHERE schemaname = 'projekt_katinka';
 select * from languages limit 1000 offset 0;
+
+
+ALTER TABLE uid_llang_stats_ne DISABLE TRIGGER ALL;
+
+ALTER TABLE uid_llang_stats_ne enABLE TRIGGER ALL;
+alter TABLE these2_englisch_einesprache add column learning_language varchar(2);
+update these2_englisch_einesprache set learning_language=ul.learning_language 
+FROM users_languages ul
+where ul.uid=these2_englisch_einesprache.uid;
+ALTER TABLE lexeme
+ADD CONSTRAINT lexeme_language_fkey FOREIGN key(language) REFERENCES languages(abkuerzung);
+
+ALTER TABLE uid_llang_stats_ne
+ADD CONSTRAINT uid_llang_stats_ne_language_fkey 
+FOREIGN key(learning_language) REFERENCES languages(abkuerzung);
+
+select count(*) as c, lexem_uninflected from these1_englischlerner_formenreichtum_mit_wordtyp_lang 
+GROUP BY lexem_uninflected order by c desc;
+select * from lexeme where lexem_uninflected='pouco';

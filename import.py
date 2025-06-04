@@ -10,7 +10,7 @@ chunksize = 100_000  # je nach RAM evtl. 50_000 oder 500_000
 
 def filling(table:str,csv_path:str):
 	first_chunk = True  # nur beim ersten Chunk die Tabelle anlegen
-
+	
 	for i, chunk in enumerate(pd.read_csv(csv_path, sep=",", chunksize=chunksize, dtype=str)):
 		# Transaktion manuell starten
 		with engine.connect() as connection:
@@ -31,7 +31,7 @@ def filling(table:str,csv_path:str):
 				transaction.rollback()
 # csv_path=r"C:\Users\eve\Downloads\mystuff\Data+\mysql\projekt_katinka\wordtype.csv" 
 # filling("wordtype",csv_path) 
-csv_path=r"C:\Users\eve\Downloads\mystuff\Data+\mysql\projekt_katinka\sprachen.csv" 
-filling("languages",csv_path)
-# csv_path=r"C:\Users\eve\Downloads\mystuff\Data+\mysql\projekt_katinka\learning_traces.13m.csv" 
-# filling("vocable_learning",csv_path)
+# csv_path=r"C:\Users\eve\Downloads\mystuff\Data+\mysql\projekt_katinka\sprachen.csv" 
+# filling("languages",csv_path)
+csv_path=r"C:\Users\eve\Downloads\mystuff\Data+\mysql\projekt_katinka\learning_traces.13m.csv" 
+filling("vocable_learning2",csv_path)
